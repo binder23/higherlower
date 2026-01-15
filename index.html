@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Higher or Lower</title>
+
+<style>
+    body {
+        min-height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #4facfe, #00c6ff);
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        transition: background 0.6s ease;
+    }
+
+    body.lose {
+        background: linear-gradient(135deg, #ff4d4d, #8b0000);
+    }
+
+    .game {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(14px);
+        padding: 45px 55px;
+        border-radius: 25px;
+        box-shadow: 0 35px 80px rgba(0, 0, 0, 0.45);
+        text-align: center;
+        width: 380px;
+        animation: fadeIn 0.8s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    h1 {
+        font-size: 44px;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        font-size: 72px;
+        margin: 25px 0;
+        text-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    }
+
+    #score {
+        font-size: 22px;
+        margin-bottom: 25px;
+        font-weight: bold;
+    }
+
+    .choice-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 22px;
+        margin-bottom: 30px;
+    }
+
+    button {
+        padding: 14px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    button:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    #higher {
+        background: linear-gradient(135deg, #51cf66, #2b8a3e);
+        color: white;
+    }
+
+    #lower {
+        background: linear-gradient(135deg, #339af0, #1864ab);
+        color: white;
+    }
+
+    #roll {
+        width: 100%;
+        font-size: 24px;
+        background: linear-gradient(135deg, #ffd43b, #fab005);
+        margin-bottom: 15px;
+    }
+
+    #reset {
+        width: 100%;
+        font-size: 18px;
+        background: linear-gradient(135deg, #adb5bd, #495057);
+        color: white;
+        display: none;
+    }
+
+    .selected {
+        outline: 4px solid black;
+        transform: scale(1.08);
+    }
+
+    .correct {
+        background: #51cf66 !important;
+    }
+
+    .wrong {
+        background: #ff6b6b !important;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="game">
+    <h1>High or Lower</h1>
+    <h2>Lock in your guess</h2>
+
+    <h3 id="output"></h3>
+    <div id="score">Score: 0</div>
+
+    <div class="choice-buttons">
+        <button id="higher" onclick="selectGuess('higher')">Higher</button>
+        <button id="lower" onclick="selectGuess('lower')">Lower</button>
+    </div>
+
+    <button id="roll" onclick="roll()">ROLL</button>
+    <button id="reset" onclick="resetGame()">RESET</button>
+</div>
+
+<script>
+    let currentNum = Math.floor(Math.random() * 100) + 1;
+    document.getElementById("output").innerText = currentNum;
+    let newNum = 0;
+    let score = 0;
+    let guess = null;
+    let gameOver = false;
+
+    function selectGuess(choice) {
+        if (gameOver) return;
+
+        guess = choice;
+        document.getElementById("higher").classList.remove("selected");
+        document.getElementById("lower").classList.remove("selected");
+        document.getElementById(choice).classList.add("selected");
+    }
+
+    function roll() {
+        if (guess === null || gameOver) return;
+
+        newNum = Math.floor(Math.random() * 100) + 1;
+        document.getElementById("output").innerText = newNum;
+
+        document.getElementById("higher").classList.remove("correct", "wrong", "selected");
+        document.getElementById("lower").classList.remove("correct", "wrong", "selected");
+
+        if (
+            (guess === "higher" && newNum > currentNum) ||
+            (guess === "lower" && newNum < currentNum)
+        ) {
+            score++;
+            document.getElementById("score").innerText = "Score: " + score;
+            document.getElementById(guess).classList.add("correct");
+        } else {
+            document.getElementById(guess).classList.add("wrong");
+            document.body.classList.add("lose");
+            gameOver = true;
+            document.getElementById("roll").style.display = "none";
+            document.getElementById("reset").style.display = "block";
+        }
+
+        currentNum = newNum;
+        guess = null;
+    }
+
+    function resetGame() {
+        currentNum = Math.floor(Math.random() * 100) + 1;
+        score = 0;
+        guess = null;
+        gameOver = false;
+
+        document.getElementById("output").innerText = currentNum;
+        document.getElementById("score").innerText = "Score: 0";
+
+        document.body.classList.remove("lose");
+
+        document.getElementById("higher").classList.remove("correct", "wrong", "selected");
+        document.getElementById("lower").classList.remove("correct", "wrong", "selected");
+
+        document.getElementById("roll").style.display = "block";
+        document.getElementById("reset").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
